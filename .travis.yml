@@ -1,0 +1,65 @@
+language: generic
+os: linux
+
+install:
+- cd ci/
+- source texlive.sh
+- cd ..
+
+cache:
+  directories:
+  - /tmp/texlive
+  - $HOME/.texlive
+  - /tmp/tlpkg
+
+addons:
+  apt:
+    packages:
+    - ghostscript
+    - realpath
+
+before_script:
+- git fetch --unshallow --tags || true
+
+script: |
+  set -e
+  cd doc/latex/pgf-pie
+  while : ; do
+    $engine -shell-escape -halt-on-error -interaction=nonstopmode pgf-pie-manual.tex
+    grep -q -E "(There were undefined references|Rerun to get (cross-references|the bars) right)" *.log || break
+    [ "$(( thisrun=$(( thisrun + 1 )) ))" -lt 5 ] || { echo "Reruns exceeded"; exit 1; }
+  done
+  cd -
+
+jobs:
+  include:
+  - env: engine=lualatex
+
+  - env: engine=pdflatex
+
+  - env: engine=xelatex
+
+  - env: engine=latex
+    after_script: |
+      cd doc/latex/pgf-pie
+      dvips pgf-pie-manual.dvi
+      ps2pdf pgf-pie-manual.ps
+      cd -
+
+before_deploy: |
+  git ls-files | sed '/^\./d;/^ci/d' | tee FILES
+  echo doc/latex/pgf-pie/pgf-pie-manual.pdf >> FILES
+  zip -j pgf-pie.zip $(cat FILES)
+
+deploy:
+  provider: releases
+  token: $GH_TOKEN
+  file_glob: true
+  file:
+  - "*.zip"
+  - "doc/latex/pgf-pie/pgf-pie-manual.pdf"
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true
+    condition: $engine = lualatex
