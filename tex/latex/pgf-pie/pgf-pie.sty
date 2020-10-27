@@ -45,14 +45,17 @@ chart by using PGF/Tikz package.]
   {
     % label and number together
     \path (O) -- ++(\midangle:\innerpos) node
-    {\scalefont{#3}\shortstack{#4\\\pgfpie@numbertext{#3}}};
+    {\scalefont{#3}\shortstack{\pgfpie@labeltext{#4}\\\pgfpie@numbertext{#3}}};
   }
   {
     % label
-    \iflegend
+    \ifpgfpie@hidelabel
     \else
-    \path (O) -- ++ (\midangle:\pgfpie@radius)
-    node[inner sep=0, \pgfpie@text=\midangle:#4]{};
+      \iflegend
+      \else
+      \path (O) -- ++ (\midangle:\pgfpie@radius)
+      node[inner sep=0, \pgfpie@text=\midangle:#4]{};
+      \fi
     \fi
 
     % number
@@ -96,7 +99,7 @@ chart by using PGF/Tikz package.]
   \ifthenelse{\equal{\pgfpie@text}{inside}}
   {
     \draw[fill=#4, \pgfpie@style] (#1) rectangle node
-    {\scalefont{#3}\shortstack{#5\\\pgfpie@numbertext{#3}}} ++(#2);
+    {\scalefont{#3}\shortstack{\pgfpie@labeltext{#5}\\\pgfpie@numbertext{#3}}} ++(#2);
   }
   {
     \draw[fill=#4, \pgfpie@style] (#1) rectangle node
@@ -115,7 +118,7 @@ chart by using PGF/Tikz package.]
   \draw[fill=#4, #5] (#1) circle[radius=#2];
   \ifthenelse{\equal{\pgfpie@text}{inside}}
   {
-    \node at (#1) {\scalefont{#3}\shortstack{#6\\\pgfpie@numbertext{#3}}};
+    \node at (#1) {\scalefont{#3}\shortstack{\pgfpie@labeltext{#6}\\\pgfpie@numbertext{#3}}};
   }
   {
     \node at (#1) {\scalefont{#3}\pgfpie@numbertext{#3}};
@@ -180,12 +183,23 @@ chart by using PGF/Tikz package.]
 }
 
 \newif\ifhidenumber
-\pgfkeys{/hide number/.is if=hidenumber}
+\newif\ifpgfpie@hidelabel
+\pgfkeys{
+  /hide number/.is if=hidenumber,
+  /hide label/.is if=pgfpie@hidelabel
+}
 \newcommand{\pgfpie@numbertext}[1]
 {
   \ifhidenumber
   \else
   \pgfpie@beforenumber#1\pgfpie@afternumber
+  \fi
+}
+\newcommand{\pgfpie@labeltext}[1]
+{
+  \ifpgfpie@hidelabel
+  \else
+    #1
   \fi
 }
 
@@ -209,7 +223,8 @@ chart by using PGF/Tikz package.]
     square=false,
     cloud=false,
     scale font=false,
-    hide number=false
+    hide number=false,
+    every pie/.try
   }
   % load user's parameters
   \pgfkeys{#1}
@@ -279,8 +294,11 @@ chart by using PGF/Tikz package.]
       \ifthenelse{\equal{\pgfpie@text}{inside}}
       {}
       {
-        \path (start) -- ++(\horizontalLength,\height*0.5) node[inner
-        sep=0, \pgfpie@text=0:\t]{};
+        \ifpgfpie@hidelabel
+        \else
+          \path (start) -- ++(\horizontalLength,\height*0.5) node[inner
+          sep=0, \pgfpie@text=0:\t]{};
+        \fi
       }
       \fi
 
@@ -302,8 +320,11 @@ chart by using PGF/Tikz package.]
       \ifthenelse{\equal{\pgfpie@text}{inside}}
       {}
       {
-        \path (start) -- ++(\width*0.5,\verticalLength) node[inner
-        sep=0, \pgfpie@text=90:\t]{};
+        \ifpgfpie@hidelabel
+        \else
+          \path (start) -- ++(\width*0.5,\verticalLength) node[inner
+          sep=0, \pgfpie@text=90:\t]{};
+        \fi
       }
       \fi
 
@@ -372,12 +393,15 @@ chart by using PGF/Tikz package.]
     \ifthenelse{\equal{\pgfpie@text}{inside}}
     {}
     {
-      \path (O) -- ++(\cloudExtendDir:\cloudR)
-      node[inner sep=0, \pgfpie@text=\cloudExtendDir:\t] {};
+      \ifpgfpie@hidelabel
+      \else
+        \path (O) -- ++(\cloudExtendDir:\cloudR)
+        node[inner sep=0, \pgfpie@text=\cloudExtendDir:\t] {};
+      \fi
     }
     \fi
   }
-  %%%%%%%%%% CLOUD PIE BGEIN %%%%%%%%%%%
+  %%%%%%%%%% CLOUD PIE END %%%%%%%%%%%
   \else
   %%%%%%%%%% CIRCLE PIE BGEIN %%%%%%%%%%%
   \ifpolar
@@ -430,19 +454,22 @@ chart by using PGF/Tikz package.]
   \fi
 
   % legend
-  \iflegend
-  \coordinate[xshift=0.8cm,
-  yshift=(\value{pgfpie@sliceLength}*0.5+1)*0.5cm] (legendpos) at
-  (current bounding box.east);
+  \ifpgfpie@hidelabel
+  \else
+    \iflegend
+      \coordinate[xshift=0.8cm,
+      yshift=(\value{pgfpie@sliceLength}*0.5+1)*0.5cm] (legendpos) at
+      (current bounding box.east);
 
-  \begin{scope}[node distance=0.5cm]
-    \foreach \p/\t  [count=\i from 0] in {#2}
-    {
-      \pgfpie@findColor{\i}
-      \node[draw, fill=\thecolor, \pgfpie@style, below of=legendpos, label=0:\t] (legendpos) {};
-    }
-  \end{scope}
-  \fi  
+      \begin{scope}[node distance=0.5cm]
+        \foreach \p/\t  [count=\i from 0] in {#2}
+        {
+          \pgfpie@findColor{\i}
+          \node[draw, fill=\thecolor, \pgfpie@style, below of=legendpos, label=0:\t] (legendpos) {};
+        }
+      \end{scope}
+    \fi
+  \fi
 }
 
 %%% End of pgf-pie.sty
