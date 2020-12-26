@@ -65,7 +65,7 @@
   \pgfmathparse{0.5*(#1)+0.5*(#2)}
   \let\pgfpie@midangle\pgfmathresult
 
-  \path (#8) -- ++(\pgfpie@midangle:{#5}) coordinate (pgfpie@O);
+  \path (#8) -- ++({\pgfpie@midangle}:{#5}) coordinate (pgfpie@O);
 
   \pgfmathparse{(#7)+(#5)}
   \let\pgfpie@radius\pgfmathresult
@@ -79,17 +79,17 @@
 
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     % label and number together
-    \path (pgfpie@O) -- ++(\pgfpie@midangle:\pgfpie@innerpos) node[align=center]
+    \path (pgfpie@O) -- ++({\pgfpie@midangle}:{\pgfpie@innerpos}) node[align=center]
     {\pgfpie@scalefont{#3}#4\\\pgfpie@numbertext{#3}};
   }{%
     % label
     \pgfpie@iflegend{}{%
-      \path (pgfpie@O) -- ++ (\pgfpie@midangle:\pgfpie@radius)
-      node[inner sep=0, \pgfpie@text=\pgfpie@midangle:#4]{};
+      \path (pgfpie@O) -- ++ ({\pgfpie@midangle}:{\pgfpie@radius})
+      node[inner sep=0, \pgfpie@text={\pgfpie@midangle:#4}]{};
     }%
 
     % number
-    \path (pgfpie@O) -- ++(\pgfpie@midangle:\pgfpie@innerpos) node
+    \path (pgfpie@O) -- ++({\pgfpie@midangle}:{\pgfpie@innerpos}) node
     {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}};
   }%
 }
@@ -269,11 +269,11 @@
 }
 
 \def\pgfpie@pie@square#1{%
-  \pgfmathparse{\pgfpie@radius*2}
+  \pgfmathparse{(\pgfpie@radius)*2}
   \xdef\pgfpie@verticalLength{\pgfmathresult}
   \xdef\pgfpie@horizontalLength{\pgfmathresult}
-  \path (\pgfpie@pos) -- ++(-\pgfpie@radius, -\pgfpie@radius) coordinate (pgfpie@start);
-  \pgfmathparse{\pgfpie@verticalLength * \pgfpie@horizontalLength / \pgfpie@sum}
+  \path (\pgfpie@pos) -- ++({-\pgfpie@radius},{-\pgfpie@radius}) coordinate (pgfpie@start);
+  \pgfmathparse{(\pgfpie@verticalLength) * (\pgfpie@horizontalLength) / (\pgfpie@sum)}
   \let\pgfpie@squareUnit\pgfmathresult
 
   % drawing loop
@@ -282,7 +282,7 @@
     \pgfpie@findColor{\i}
 
     \pgfpie@ifdim{\pgfpie@verticalLength cm}{>}{\pgfpie@horizontalLength cm}{%
-      \pgfmathparse{\p * \pgfpie@squareUnit / \pgfpie@horizontalLength}
+      \pgfmathparse{(\p) * (\pgfpie@squareUnit) / (\pgfpie@horizontalLength)}
       \let\pgfpie@height\pgfmathresult
       
       \pgfpie@square{pgfpie@start}{\pgfpie@horizontalLength,\pgfpie@height}
@@ -292,8 +292,8 @@
       %label
       \pgfpie@iflegend{}{%
         \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
-          \path (pgfpie@start) -- ++(\pgfpie@horizontalLength,\pgfpie@height*0.5) node[inner
-          sep=0, \pgfpie@text=0:\t]{};
+          \path (pgfpie@start) -- ++({\pgfpie@horizontalLength},{\pgfpie@height*0.5}) node[inner
+          sep=0, \pgfpie@text={0:{\t}}]{};
         }%
       }%
 
@@ -311,8 +311,8 @@
       %label
       \pgfpie@iflegend{}{%
         \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
-          \path (pgfpie@start) -- ++(\pgfpie@width*0.5,\pgfpie@verticalLength) node[inner
-          sep=0, \pgfpie@text=90:\t]{};
+          \path (pgfpie@start) -- ++({\pgfpie@width*0.5},{\pgfpie@verticalLength}) node[inner
+          sep=0, \pgfpie@text={90:{\t}}]{};
         }%
       }%
 
@@ -329,19 +329,19 @@
   {
     % find explode
     \pgfpie@findExplode{\i}
-    \def\pgfpie@cloudGap{\pgfpie@theexplode + 0.1}
+    \def\pgfpie@cloudGap{(\pgfpie@theexplode) + 0.1}
     \pgfmathparse{sqrt((\p) / (\pgfpie@sum)) * (\pgfpie@radius)}
     \let\pgfpie@cloudR\pgfmathresult
     \pgfpie@ifnum{\i}{=}{0}{%
       % first cloud
       \coordinate (pgfpie@O) at (\pgfpie@pos);
       \xdef\pgfpie@cloudRone{\pgfpie@cloudR}
-      \xdef\pgfpie@cloudExtendDir{180+\pgfpie@rotate}
+      \xdef\pgfpie@cloudExtendDir{180+(\pgfpie@rotate)}
     }{\pgfpie@ifnum{\i}{=}{1}{%
       % second cloud
       \xdef\pgfpie@cloudRtwo{\pgfpie@cloudR}
-      \xdef\pgfpie@cloudExtendDir{45+\pgfpie@rotate}
-      \path (pgfpie@O) -- ++(\pgfpie@cloudExtendDir:\pgfpie@cloudRone+\pgfpie@cloudGap+\pgfpie@cloudRtwo) coordinate (pgfpie@O);
+      \xdef\pgfpie@cloudExtendDir{45+(\pgfpie@rotate)}
+      \path (pgfpie@O) -- ++({\pgfpie@cloudExtendDir}:{(\pgfpie@cloudRone)+(\pgfpie@cloudGap)+(\pgfpie@cloudRtwo)}) coordinate (pgfpie@O);
     }{%
       % next cloud
       \pgfmathparse{(\pgfpie@cloudRone)+(\pgfpie@cloudGap)+(\pgfpie@cloudRtwo)}
@@ -355,7 +355,7 @@
       \pgfmathparse{180 - acos((\pgfpie@tmp) / 2 / (\pgfpie@la) / (\pgfpie@lc))}
       \let\pgfpie@cloudRot\pgfmathresult
       \pgfpie@ifodd{\i}{%
-        \pgfmathparse{-\pgfpie@cloudRot}
+        \pgfmathparse{-(\pgfpie@cloudRot)}
         \let\pgfpie@cloudRot\pgfmathresult
       }{}%
       \pgfmathparse{(\pgfpie@cloudExtendDir) - (\pgfpie@cloudRot)}
@@ -375,7 +375,7 @@
     \pgfpie@iflegend{}{%
       \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
         \path (pgfpie@O) -- ++({\pgfpie@cloudExtendDir}:{\pgfpie@cloudR})
-        node[inner sep=0, \pgfpie@text={\pgfpie@cloudExtendDir:\t}] {};
+        node[inner sep=0, \pgfpie@text={\pgfpie@cloudExtendDir:{\t}}] {};
       }%
     }%
   }%
@@ -418,8 +418,8 @@
 
     % find color
     \pgfpie@findColor{\i}
-    \pgfpie@slice{\pgfpie@angleBegin/\pgfpie@sum*360+\pgfpie@rotate}
-    {\the\pgfpie@angleEnd/\pgfpie@sum*360+\pgfpie@rotate}
+    \pgfpie@slice{(\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)}
+    {\the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)}
     {\p}
     {\t}
     {\pgfpie@theexplode}
@@ -439,7 +439,7 @@
       \foreach \p/\t [count=\i from 0] in {#1}
       {
         \pgfpie@findColor{\i}
-        \node[draw, fill=\pgfpie@thecolor, \pgfpie@style, below of={pgfpie@legendpos}, label={0:{\t}}] (pgfpie@legendpos) {};
+        \node[draw, fill={\pgfpie@thecolor}, \pgfpie@style, below of={pgfpie@legendpos}, label={0:{\t}}] (pgfpie@legendpos) {};
       }
     \endscope
   }{}% 
