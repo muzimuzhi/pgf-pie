@@ -115,7 +115,7 @@ jobs:
         echo doc/latex/pgf-pie/pgf-pie-manual.pdf | tee -a FILES
         tar --xform='s$\(doc\|tex\)/latex/pgf-pie/$$g' \
             --xform='s$^$pgf-pie/$g' \
-            -cvf pgf-pie_${GIT_TAG}.tar.gz $(cat FILES)
+            -czvf pgf-pie_${GIT_TAG}.tar.gz $(cat FILES)
 
     - name: "ZIP: Sign"
       if: |
