@@ -385,7 +385,8 @@
   \pgfpie@ifpolar{%
     \xdef\pgfpie@maxValue{0}
     \foreach \p/\e in {#1} {
-      \pgfpie@ifnum{\pgfpie@maxValue}{<}{\p}{%
+      \pgfmathparse{\p}%
+      \pgfpie@ifdim{\pgfpie@maxValue pt}{<}{\pgfmathresult pt}{%
         \xdef\pgfpie@maxValue{\p}
       }{}%
     }
