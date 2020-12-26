@@ -34,7 +34,7 @@
   \fi}
 
 \def\pgfpie@newif#1{%
-  \expandafter\newif\csname ifpgfpie@#1\endcsname
+  \csname newif\expandafter\endcsname\csname ifpgfpie@#1\endcsname
   \expandafter\def\csname pgfpie@if#1\expandafter\endcsname\expandafter{%
     \csname ifpgfpie@#1\endcsname
       \expandafter\pgfutil@firstoftwo
