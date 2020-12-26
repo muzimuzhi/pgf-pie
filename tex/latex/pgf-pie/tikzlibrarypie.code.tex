@@ -79,8 +79,8 @@
 
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     % label and number together
-    \path (pgfpie@O) -- ++(\pgfpie@midangle:\pgfpie@innerpos) node
-    {\pgfpie@scalefont{#3}\shortstack{#4\\\pgfpie@numbertext{#3}}};
+    \path (pgfpie@O) -- ++(\pgfpie@midangle:\pgfpie@innerpos) node[align=center]
+    {\pgfpie@scalefont{#3}#4\\\pgfpie@numbertext{#3}};
   }{%
     % label
     \pgfpie@iflegend{}{%
@@ -123,8 +123,8 @@
 % #5: text
 \def\pgfpie@square#1#2#3#4#5{%
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
-    \draw[fill={#4},\pgfpie@style] (#1) rectangle node
-    {\pgfpie@scalefont{#3}\shortstack{#5\\\pgfpie@numbertext{#3}}} ++(#2);
+    \draw[fill={#4},\pgfpie@style] (#1) rectangle node[align=center]
+    {\pgfpie@scalefont{#3}#5\\\pgfpie@numbertext{#3}} ++(#2);
   }{%
     \draw[fill={#4},\pgfpie@style] (#1) rectangle node
     {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}} ++(#2);
@@ -140,7 +140,7 @@
 \def\pgfpie@cloud#1#2#3#4#5#6{%
   \draw[fill=#4, #5] (#1) circle[radius=#2];
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
-    \node at (#1) {\pgfpie@scalefont{#3}\shortstack{#6\\\pgfpie@numbertext{#3}}};
+    \node[align=center] at (#1) {\pgfpie@scalefont{#3}#6\\\pgfpie@numbertext{#3}};
   }{%
     \node at (#1) {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}};
   }%
