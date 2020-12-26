@@ -80,12 +80,14 @@
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     % label and number together
     \path (pgfpie@O) -- ++({\pgfpie@midangle}:{\pgfpie@innerpos}) node[align=center]
-    {\pgfpie@scalefont{#3}#4\\\pgfpie@numbertext{#3}};
+    {\pgfpie@scalefont{#3}\pgfpie@labeltext{#4}\\\pgfpie@numbertext{#3}};
   }{%
     % label
-    \pgfpie@iflegend{}{%
-      \path (pgfpie@O) -- ++ ({\pgfpie@midangle}:{\pgfpie@radius})
-      node[inner sep=0, \pgfpie@text={\pgfpie@midangle:#4}]{};
+    \pgfpie@ifhidelabel{}{%
+      \pgfpie@iflegend{}{%
+        \path (pgfpie@O) -- ++ ({\pgfpie@midangle}:{\pgfpie@radius})
+        node[inner sep=0, \pgfpie@text={\pgfpie@midangle:#4}]{};
+      }%
     }%
 
     % number
@@ -124,7 +126,7 @@
 \def\pgfpie@square#1#2#3#4#5{%
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     \draw[fill={#4},\pgfpie@style] (#1) rectangle node[align=center]
-    {\pgfpie@scalefont{#3}#5\\\pgfpie@numbertext{#3}} ++(#2);
+    {\pgfpie@scalefont{#3}\pgfpie@labeltext{#5}\\\pgfpie@numbertext{#3}} ++(#2);
   }{%
     \draw[fill={#4},\pgfpie@style] (#1) rectangle node
     {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}} ++(#2);
@@ -140,7 +142,7 @@
 \def\pgfpie@cloud#1#2#3#4#5#6{%
   \draw[fill=#4, #5] (#1) circle[radius=#2];
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
-    \node[align=center] at (#1) {\pgfpie@scalefont{#3}#6\\\pgfpie@numbertext{#3}};
+    \node[align=center] at (#1) {\pgfpie@scalefont{#3}\pgfpie@labeltext{#6}\\\pgfpie@numbertext{#3}};
   }{%
     \node at (#1) {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}};
   }%
@@ -192,6 +194,10 @@
   }%
 }
 
+\pgfpie@newif{hidelabel}
+\pgfqkeys{/pgfpie}{hide label/.is if=pgfpie@hidelabel}
+\def\pgfpie@labeltext#1{\pgfpie@ifhidelabel{}{#1}}
+
 \tikzaddtikzonlycommandshortcutlet{\pie}{\pgfpie@pie}%
 
 \def\pgfpie@pie{%
@@ -217,7 +223,9 @@
     square=false,
     cloud=false,
     scale font=false,
-    hide number=false
+    hide number=false,
+    hide label=false,
+    every pie/.try,
   }%
   % load user's parameters
   \pgfqkeys{/pgfpie}{#1}%
@@ -268,9 +276,10 @@
       }{\pgfpie@pie@circle{#2}}}
 
   % legend
-  \pgfpie@iflegend{%
-    \pgfpie@legend{#2}%
-  }{}%
+  \pgfpie@ifhidelabel{}{%
+    \pgfpie@iflegend{%
+      \pgfpie@legend{#2}%
+  }{}}%
 }
 
 \def\pgfpie@pie@square#1{%
@@ -297,8 +306,10 @@
       %label
       \pgfpie@iflegend{}{%
         \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
-          \path (pgfpie@start) -- ++({\pgfpie@horizontalLength},{\pgfpie@height*0.5}) node[inner
-          sep=0, \pgfpie@text={0:{\t}}]{};
+          \pgfpie@ifhidelabel{}{%
+            \path (pgfpie@start) -- ++({\pgfpie@horizontalLength},{\pgfpie@height*0.5})
+            node[inner sep=0, \pgfpie@text={0:{\t}}]{};
+          }%
         }%
       }%
 
@@ -316,8 +327,10 @@
       %label
       \pgfpie@iflegend{}{%
         \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
-          \path (pgfpie@start) -- ++({\pgfpie@width*0.5},{\pgfpie@verticalLength}) node[inner
-          sep=0, \pgfpie@text={90:{\t}}]{};
+          \pgfpie@ifhidelabel{}{%
+            \path (pgfpie@start) -- ++({\pgfpie@width*0.5},{\pgfpie@verticalLength})
+            node[inner sep=0, \pgfpie@text={90:{\t}}]{};
+          }%
         }%
       }%
 
@@ -379,8 +392,10 @@
     % label
     \pgfpie@iflegend{}{%
       \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{}{%
-        \path (pgfpie@O) -- ++({\pgfpie@cloudExtendDir}:{\pgfpie@cloudR})
-        node[inner sep=0, \pgfpie@text={\pgfpie@cloudExtendDir:{\t}}] {};
+        \pgfpie@ifhidelabel{}{%
+          \path (pgfpie@O) -- ++({\pgfpie@cloudExtendDir}:{\pgfpie@cloudR})
+          node[inner sep=0, \pgfpie@text={\pgfpie@cloudExtendDir:{\t}}] {};
+        }%
       }%
     }%
   }%
