@@ -154,15 +154,26 @@
 \newcount\pgfpie@sliceLength
 
 \pgfqkeys{/pgfpie}{%
+  .search also={/tikz,/pgf},
   explode/.store in=\pgfpie@explode,
   color/.store in=\pgfpie@color,
   radius/.store in=\pgfpie@radius,
   pos/.store in=\pgfpie@pos,
   style/.store in=\pgfpie@style,
   before number/.store in=\pgfpie@beforenumber,
-  after number/.store in=\pgfpie@afternumber,
+  after number/.code={%
+    \def\pgfpie@afternumber{#1}%
+    \def\pgfpie@late@afternumber{}%
+  },
   text/.store in=\pgfpie@text,
-  sum/.store in=\pgfpie@sum,
+  sum/.code={%
+    \def\pgfpie@sum{#1}%
+    \pgfpie@ifx\pgfpie@sum\pgfpie@sum@c{%
+      \def\pgfpie@late@afternumber{\def\pgfpie@afternumber{\%}}%
+    }{%
+      \def\pgfpie@late@afternumber{}%
+    }%
+  },
   rotate/.store in=\pgfpie@rotate,
 }
 
@@ -205,8 +216,11 @@
 }
 
 \def\pgfpie@@pie[#1]#2{%
-  % load default parameters
-  \pgfqkeys{/pgfpie}{
+  \scope[%
+    % to be compatible with "babel" lib
+    handle active characters in nodes=false,
+    % load default parameters
+    /pgfpie/.cd,
     explode=0,
     color={blue!60, cyan!60, yellow!60, orange!60, red!60,
       blue!60!cyan!60, cyan!60!yellow!60, red!60!cyan!60,
@@ -226,14 +240,11 @@
     hide number=false,
     hide label=false,
     every pie/.try,
-  }%
-  % load user's parameters
-  \pgfqkeys{/pgfpie}{#1}%
+    % load user's parameters
+    #1]
+
   % add percentage automatically
-  \pgfpie@ifx\pgfpie@sum\pgfpie@sum@c{%
-    \pgfqkeys{/pgfpie}{after number=\%}%
-    \pgfqkeys{/pgfpie}{#1}%
-  }{}%
+  \pgfpie@late@afternumber
 
   % legend or not
   \pgfpie@ifx\pgfpie@text\pgfpie@text@legend{%
@@ -280,6 +291,7 @@
     \pgfpie@iflegend{%
       \pgfpie@legend{#2}%
   }{}}%
+  \endscope
 }
 
 \def\pgfpie@pie@square#1{%
