@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/islandoftex/images/texlive:latest
 
     strategy:
       matrix:
@@ -22,69 +24,6 @@ jobs:
           /tmp/texlive
           ~/.texlive
         key: texlive
-
-    - name: Set up TeX Live environment
-      uses: pgf-tikz/actions/install-tl@master
-      with:
-        packages:
-          amsfonts
-          atbegshi
-          atveryend
-          auxhook
-          bigintcalc
-          bitset
-          carlisle
-          cm
-          cm-super
-          dvips
-          ec
-          epstopdf-pkg
-          etexcmds
-          fontname
-          geometry
-          gettitlestring
-          graphics
-          graphics-cfg
-          graphics-def
-          hycolor
-          hyperref
-          iftex
-          infwarerr
-          intcalc
-          kvdefinekeys
-          kvoptions
-          kvsetkeys
-          l3backend
-          l3kernel
-          latex
-          latex-bin
-          latexconfig
-          letltxmacro
-          listings
-          lm
-          ltxcmds
-          lualibs
-          luaotfload
-          luatex
-          luatexbase
-          metafont
-          mfware
-          mptopdf
-          pdfescape
-          pdfmarginpar
-          pdftexcmds
-          pgf
-          refcount
-          rerunfilecheck
-          stringenc
-          texlive-scripts
-          tools
-          unicode-data
-          uniquecounter
-          url
-          xcolor
-          xetex
-          zapfding
 
     - name: 'Install pgf-pie'
       run: |
