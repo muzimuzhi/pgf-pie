@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: '0 8 * * 3' # Every Wednesday at 08:00
 
 jobs:
   build:
@@ -38,7 +42,7 @@ jobs:
       run: |
         cd doc/latex/pgf-pie
         while : ; do
-          ${{ matrix.engine }} -shell-escape -halt-on-error -interaction=nonstopmode pgf-pie-manual.tex
+          ${{ matrix.engine }}-dev -shell-escape -halt-on-error -interaction=nonstopmode pgf-pie-manual.tex
           grep -q -E "(There were undefined references|Rerun to get (cross-references|the bars) right)" *.log || break
           [ "$(( thisrun=$(( thisrun + 1 )) ))" -lt 5 ] || { echo "Reruns exceeded"; exit 1; }
         done
