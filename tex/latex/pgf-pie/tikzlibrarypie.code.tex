@@ -217,6 +217,12 @@
 \pgfqkeys{/pgfpie}{hide label/.is if=pgfpie@hidelabel}
 \def\pgfpie@labeltext#1{\pgfpie@ifhidelabel{}{#1}}
 
+\pgfpie@newif{numberinlegend}
+\pgfqkeys{/pgfpie}{number in legend/.is if=pgfpie@numberinlegend}
+\def\pgfpie@legendnumbertext#1{%
+  \pgfpie@beforenumber#1\pgfpie@afternumber
+}
+
 \tikzaddtikzonlycommandshortcutlet{\pie}{\pgfpie@pie}%
 
 \def\pgfpie@pie{%
@@ -487,7 +493,7 @@
     \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
     {
       \pgfpie@findColor{\pgfpie@i}
-      \node[draw, fill={\pgfpie@thecolor}, \pgfpie@style, below of={pgfpie@legendpos}, label={0:{\pgfpie@t}}] (pgfpie@legendpos) {};
+      \node[draw, fill={\pgfpie@thecolor}, \pgfpie@style, below of={pgfpie@legendpos}, label={0:{\pgfpie@t\pgfpie@ifnumberinlegend{~\pgfpie@legendnumbertext{\pgfpie@p}}{}}}] (pgfpie@legendpos) {};
     }
   \endscope
 }
