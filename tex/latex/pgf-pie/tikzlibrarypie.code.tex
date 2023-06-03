@@ -85,7 +85,7 @@
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     % label and number together
     \path (pgfpie@O) -- ++({\pgfpie@midangle}:{\pgfpie@innerpos}) node[align=center]
-    {\pgfpie@scalefont{#3}\pgfpie@labeltext{#4}\pgfpie@numbertext{\\}{#3}};
+    {\pgfpie@scalefont{#3}\pgfpie@labelandnumbertext{#4}{#3}};
   }{%
     % label
     \pgfpie@ifhidelabel{}{%
@@ -97,7 +97,7 @@
 
     % number
     \path (pgfpie@O) -- ++({\pgfpie@midangle}:{\pgfpie@innerpos}) node
-    {\pgfpie@scalefont{#3}\pgfpie@numbertext{}{#3}};
+    {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}};
   }%
 }
 
@@ -131,10 +131,10 @@
 \def\pgfpie@square#1#2#3#4#5{%
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
     \draw[fill={#4},\pgfpie@style] (#1) rectangle node[align=center]
-    {\pgfpie@scalefont{#3}\pgfpie@labeltext{#5}\pgfpie@numbertext{\\}{#3}} ++(#2);
+    {\pgfpie@scalefont{#3}\pgfpie@labelandnumbertext{#5}{#3}} ++(#2);
   }{%
     \draw[fill={#4},\pgfpie@style] (#1) rectangle node
-    {\pgfpie@scalefont{#3}\pgfpie@numbertext{}{#3}} ++(#2);
+    {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}} ++(#2);
   }%
 }
 
@@ -147,9 +147,9 @@
 \def\pgfpie@cloud#1#2#3#4#5#6{%
   \draw[fill=#4, #5] (#1) circle[radius=#2];
   \pgfpie@ifx\pgfpie@text\pgfpie@text@inside{%
-    \node[align=center] at (#1) {\pgfpie@scalefont{#3}\pgfpie@labeltext{#6}\pgfpie@numbertext{\\}{#3}};
+    \node[align=center] at (#1) {\pgfpie@scalefont{#3}\pgfpie@labelandnumbertext{#6}{#3}};
   }{%
-    \node at (#1) {\pgfpie@scalefont{#3}\pgfpie@numbertext{}{#3}};
+    \node at (#1) {\pgfpie@scalefont{#3}\pgfpie@numbertext{#3}};
   }%
 }
 
@@ -207,7 +207,8 @@
 
 \pgfpie@newif{hidenumber}
 \pgfqkeys{/pgfpie}{hide number/.is if=pgfpie@hidenumber}
-\def\pgfpie@numbertext#1#2{%
+\def\pgfpie@numbertext#1{\pgfpie@numbertext@{}{#1}}
+\def\pgfpie@numbertext@#1#2{%
   \pgfpie@ifhidenumber{}{%
     #1% empty or \\
     \pgfpie@beforenumber#2\pgfpie@afternumber
@@ -216,7 +217,14 @@
 
 \pgfpie@newif{hidelabel}
 \pgfqkeys{/pgfpie}{hide label/.is if=pgfpie@hidelabel}
-\def\pgfpie@labeltext#1{\pgfpie@ifhidelabel{}{#1}}
+\def\pgfpie@labelandnumbertext#1#2{%
+  \pgfpie@ifhidelabel{%
+    \pgfpie@numbertext@{}{#2}%
+  }{%
+    #1%
+    \pgfpie@numbertext@{\\}{#2}%
+  }%
+}
 
 \pgfpie@newif{numberinlegend}
 \pgfqkeys{/pgfpie}{number in legend/.is if=pgfpie@numberinlegend}
