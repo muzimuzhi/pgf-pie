@@ -17,9 +17,15 @@ jobs:
         engine: [pdflatex, lualatex, xelatex]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    
+    # `actions/checkout` default input `set-safe-directory: true` doesn't work
+    # for containers.
+    # see for example https://github.com/actions/checkout/issues/766
+    - name: Fixup Run actions/checkout
+      run: git config --global --add safe.directory '*'
 
     - name: 'Install pgf-pie'
       run: |
